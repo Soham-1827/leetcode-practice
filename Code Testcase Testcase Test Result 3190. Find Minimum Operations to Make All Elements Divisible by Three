@@ -29,3 +29,20 @@ Constraints:
 
 1 <= nums.length <= 50
 1 <= nums[i] <= 50
+
+
+class Solution {
+public:
+    int minimumOperations(vector<int>& nums) {
+        int operations = 0;
+        for(int num : nums){
+            if(num%3 == 0){
+                continue;
+            }
+            else{
+                operations++;
+            }
+        }
+        return operations;
+    }
+};
