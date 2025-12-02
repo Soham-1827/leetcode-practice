@@ -1,0 +1,105 @@
+You are given a 2D integer array points, where points[i] = [xi, yi] represents the coordinates of the ith point on the Cartesian plane.
+
+A horizontal trapezoid is a convex quadrilateral with at least one pair of horizontal sides (i.e. parallel to the x-axis). Two lines are parallel if and only if they have the same slope.
+
+Return the number of unique horizontal trapezoids that can be formed by choosing any four distinct points from points.
+
+Since the answer may be very large, return it modulo 109 + 7.
+
+ 
+
+Example 1:
+
+Input: points = [[1,0],[2,0],[3,0],[2,2],[3,2]]
+
+Output: 3
+
+Explanation:
+
+
+
+There are three distinct ways to pick four points that form a horizontal trapezoid:
+
+Using points [1,0], [2,0], [3,2], and [2,2].
+Using points [2,0], [3,0], [3,2], and [2,2].
+Using points [1,0], [3,0], [3,2], and [2,2].
+Example 2:
+
+Input: points = [[0,0],[1,0],[0,1],[2,1]]
+
+Output: 1
+
+Explanation:
+
+
+
+There is only one horizontal trapezoid that can be formed.
+
+ 
+
+Constraints:
+
+4 <= points.length <= 105
+–108 <= xi, yi <= 108
+All points are pairwise distinct.
+Code:
+class Solution {
+public:
+    int countTrapezoids(vector<vector<int>>& points) {
+        const int MOD = 1e9 + 7;
+        const long long INV2 = 500000004; // inverse of 2 modulo 1e9+7
+
+        unordered_map<int, vector<int>> x_cord; // Map y to x
+        for (auto& point : points) {
+            x_cord[point[1]].push_back(point[0]);
+        }
+
+        long long final_ans = 0;
+        vector<long long> results;  // store C(n, 2) for each horizontal line
+
+        for (const auto& pair : x_cord) {
+            int n = pair.second.size();
+            int r = 2;
+            if (n >= r) {
+                long long ans = nCr(n, r); // C(n, 2)
+                ans %= MOD;
+                results.push_back(ans);
+            }
+        }
+
+        if (results.size() >= 2) {
+            long long sum = 0;
+            long long sumSq = 0;
+
+            for (long long v : results) {
+                long long x = v % MOD;
+                sum = (sum + x) % MOD;
+                sumSq = (sumSq + x * x % MOD) % MOD;
+            }
+
+            long long total = (sum * sum) % MOD;
+            total = (total - sumSq + MOD) % MOD; // ensure non negative
+            final_ans = (total * INV2) % MOD;    // divide by 2 in modulo
+        } else {
+            final_ans = 0;
+        }
+
+        return static_cast<int>(final_ans % MOD);
+    }
+
+    long long nCr(long long n, long long r) {
+        if (r > n) return 0;
+        if (r == 0 || r == n) return 1;
+        if (r == 1) return n;
+        if (r == 2) return n * (n - 1) / 2;
+
+        // General case if ever needed
+        long long res = 1;
+        for (long long i = 1; i <= r; ++i) {
+            res = res * (n - r + i) / i;
+        }
+        return res;
+    }
+};
+
+Easy problem, just did nC2 of all the points with same y to another for all the y values.
