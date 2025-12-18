@@ -35,3 +35,43 @@ Constraints:
 
 1 <= directions.length <= 105
 directions[i] is either 'L', 'R', or 'S'.
+
+
+class Solution {
+public:
+    int countCollisions(string directions) {
+        int n = directions.size();
+        int ans = 0;
+        bool accident;
+        accident = false;
+        for(int i = 1; i < n; i++){
+            if(directions[i] == 'L'){
+                if(directions[i - 1] != 'L' || accident){
+                    ans += 1;
+                    accident = true;
+                }
+            }
+        }
+
+        accident = false;
+        for(int i = n - 2; i >=0; i--){
+            if(directions[i] == 'R'){
+                if(directions[i+1] != 'R' || accident){
+                    ans += 1;
+                    accident = true;
+                }
+            }
+        }
+        return ans;
+    }
+};
+Why does this count correctly?
+You might wonder: "Wait, the problem says R hitting L gives 2 points. Why does your code only add 1 at a time?"
+
+It's because of the two passes:
+
+In the first pass, the L car hits the R car. Your code adds +1 for that L car.
+
+In the second pass, the R car hits the (now stopped) L car. Your code adds +1 for that R car.
+
+Total: 2.
